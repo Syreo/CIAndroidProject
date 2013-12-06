@@ -1,10 +1,15 @@
 package com.example.criminalintent;
 
+import java.util.Date;
 import java.util.UUID;
 
 public class Crime {
 	
 private UUID mId;
+private Date mDate;
+private boolean mSolved;
+private String mTitle;
+
 public String getmTitle() {
 	return mTitle;
 }
@@ -22,12 +27,36 @@ public UUID getmId() {
 }
 
 
-
-private String mTitle;
-
-
-
 public Crime(){
 	mId = UUID.randomUUID();
+	mDate = new Date();
+}
+
+@Override
+public String toString(){
+	return mTitle;
+}
+
+
+public boolean ismSolved() {
+	return mSolved;
+}
+
+
+
+public void setmSolved(boolean mSolved) {
+	this.mSolved = mSolved;
+}
+
+
+
+public Date getmDate() {
+	return mDate;
+}
+
+
+
+public void setmDate(Date mDate) {
+	this.mDate = mDate;
 }
 }
