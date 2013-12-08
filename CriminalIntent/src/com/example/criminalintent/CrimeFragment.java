@@ -2,9 +2,11 @@ package com.example.criminalintent;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.UUID;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -19,17 +21,19 @@ import android.widget.EditText;
 public class CrimeFragment extends Fragment {
 
 	
-	
+	public static final String EXTRA_CRIME_ID = "com.example.criminalintent.crime_id";
 	private Crime mCrime;
 	private EditText mTitleField;
 	private Button mDateButton;
 	private CheckBox mSolvedCheckBox;
+	private static final String DIALOG_DATE = "date";
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
-		mCrime = new Crime();
-	}
+		UUID crimeId = (UUID)getArguments().getSerializable(EXTRA_CRIME_ID);
+		mCrime = CrimeLab.get(getActivity()).getCrime(crimeId);
+		}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState){
@@ -38,6 +42,7 @@ public class CrimeFragment extends Fragment {
 		
 		
 		mTitleField = (EditText)v.findViewById(R.id.crime_title);
+		mTitleField.setText(mCrime.getmTitle());
 		mTitleField.addTextChangedListener(new TextWatcher(){
 			
 		public void onTextChanged(
@@ -59,11 +64,21 @@ public class CrimeFragment extends Fragment {
 		
 		mDateButton = (Button)v.findViewById(R.id.crime_date);
 		mDateButton.setText(mCrime.getmDate().toString());
-		mDateButton.setEnabled(false);
+		mDateButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				FragmentManager fm = getActivity().getSupportFragmentManager();
+				DatePickerFragment dialog = new DatePickerFragment();
+				dialog.show(fm, DIALOG_DATE);
+				
+			}
+		});
 		
 		mSolvedCheckBox = (CheckBox)v.findViewById(R.id.crime_solved);
+		mSolvedCheckBox.setChecked(mCrime.ismSolved());
 		mSolvedCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener(){
-
+		
 			
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
@@ -73,5 +88,14 @@ public class CrimeFragment extends Fragment {
 			
 		});
 		return v;
+	}
+	
+	
+	public static CrimeFragment newInstance(UUID crimeId){
+		Bundle args = new Bundle();
+		args.putSerializable(EXTRA_CRIME_ID, crimeId);
+		CrimeFragment fragment = new CrimeFragment();
+		fragment.setArguments(args);
+		return fragment;
 	}
 }
